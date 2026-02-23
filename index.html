@@ -1,0 +1,1066 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Voie de Traverse — Vol. I</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,700;0,9..144,900;1,9..144,300;1,9..144,700;1,9..144,900&family=DM+Mono:wght@300;400&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --black:   #0B0A08;
+      --dark:    #141210;
+      --earth:   #1E1A14;
+      --rust:    #C04E20;
+      --amber:   #D98B2A;
+      --gold:    #E8A93A;
+      --cream:   #F0E8D8;
+      --sand:    #C8B898;
+      --muted:   #7A6E60;
+      --rule:    rgba(240,232,216,0.10);
+      --rule-bright: rgba(240,232,216,0.18);
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--black);
+      color: var(--cream);
+      font-family: 'Instrument Serif', serif;
+      line-height: 1.65;
+      -webkit-font-smoothing: antialiased;
+      cursor: none;
+      overflow-x: hidden;
+    }
+
+    /* grain */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      pointer-events: none;
+      opacity: 0.04;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+      background-size: 180px;
+    }
+
+    * { position: relative; z-index: 1; }
+
+    /* ── CURSOR ── */
+    .cursor {
+      position: fixed;
+      top: 0; left: 0;
+      width: 9px; height: 9px;
+      background: var(--rust);
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 9999;
+      transform: translate(-50%, -50%);
+      transition: width 0.35s ease, height 0.35s ease, opacity 0.3s;
+      mix-blend-mode: screen;
+    }
+
+    .cursor.expanded {
+      width: 44px; height: 44px;
+      background: rgba(192,78,32,0.25);
+    }
+
+    /* ── NAV ── */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
+      align-items: center;
+      padding: 1.6rem 2.8rem;
+      background: rgba(11,10,8,0.88);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--rule);
+    }
+
+    .nav-edition {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.63rem;
+      letter-spacing: 0.1em;
+      color: var(--muted);
+    }
+
+    .nav-center a {
+      font-family: 'Fraunces', serif;
+      font-size: 1.3rem;
+      font-weight: 900;
+      letter-spacing: 0.04em;
+      color: var(--cream);
+      text-decoration: none;
+    }
+
+    .nav-center a span { color: var(--rust); }
+
+    .nav-right {
+      display: flex;
+      justify-content: flex-end;
+      gap: 2.5rem;
+    }
+
+    .nav-right a {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.63rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--muted);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+
+    .nav-right a:hover { color: var(--cream); }
+
+    /* ── HERO ── */
+    .hero {
+      min-height: 100svh;
+      display: grid;
+      grid-template-rows: 1fr auto;
+      padding: 0 2.8rem 3rem;
+      border-bottom: 1px solid var(--rule);
+      overflow: hidden;
+      background:
+        radial-gradient(ellipse at 65% 35%, rgba(192,78,32,0.15) 0%, transparent 55%),
+        radial-gradient(ellipse at 20% 75%, rgba(217,139,42,0.08) 0%, transparent 50%);
+    }
+
+    .hero-center {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding-top: 9rem;
+    }
+
+    .hero-kicker {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.63rem;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--rust);
+      margin-bottom: 2.5rem;
+      opacity: 0;
+      animation: rise 1s ease forwards 0.3s;
+    }
+
+    .hero-title {
+      font-family: 'Fraunces', serif;
+      font-size: clamp(5rem, 13vw, 13rem);
+      font-weight: 900;
+      line-height: 0.87;
+      letter-spacing: -0.035em;
+      max-width: 12ch;
+      opacity: 0;
+      animation: rise 1.1s ease forwards 0.5s;
+    }
+
+    .hero-title .ital {
+      font-style: italic;
+      font-weight: 300;
+      color: var(--amber);
+      display: block;
+    }
+
+    .hero-foot {
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
+      align-items: end;
+      border-top: 1px solid var(--rule);
+      padding-top: 2rem;
+      gap: 2rem;
+      opacity: 0;
+      animation: rise 1s ease forwards 0.8s;
+    }
+
+    .hero-desc {
+      font-size: 0.95rem;
+      color: var(--muted);
+      line-height: 1.85;
+      max-width: 36ch;
+    }
+
+    .hero-vol {
+      text-align: center;
+    }
+
+    .hero-vol p {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.6rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 0.3rem;
+    }
+
+    .hero-vol .bignum {
+      font-family: 'Fraunces', serif;
+      font-size: 4rem;
+      font-weight: 900;
+      line-height: 1;
+      color: rgba(240,232,216,0.05);
+      display: block;
+    }
+
+    .hero-cta-wrap {
+      display: flex;
+      justify-content: flex-end;
+      align-items: flex-end;
+    }
+
+    .btn-primary {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.7rem;
+      background: var(--rust);
+      color: var(--cream);
+      text-decoration: none;
+      padding: 0.9rem 2rem;
+      font-family: 'DM Mono', monospace;
+      font-size: 0.65rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      transition: background 0.25s, transform 0.2s;
+    }
+
+    .btn-primary:hover { background: var(--amber); transform: translateY(-2px); }
+    .btn-primary::after { content: '↗'; }
+
+    /* ── BANDEAU GREC ── */
+    .greek-band {
+      width: 100%;
+      overflow: hidden;
+      background: var(--dark);
+      border-top: 1px solid var(--rule);
+      border-bottom: 1px solid var(--rule);
+      padding: 0;
+      line-height: 0;
+    }
+
+    .greek-inner svg {
+      width: 100%;
+      height: 64px;
+      display: block;
+    }
+
+    /* ── FEATURED ── */
+    .featured-section {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      border-bottom: 1px solid var(--rule);
+    }
+
+    .featured-text {
+      padding: 5rem 2.8rem;
+      border-right: 1px solid var(--rule);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 3rem;
+      background: var(--dark);
+    }
+
+    .tag {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.6rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--rust);
+    }
+
+    .featured-title {
+      font-family: 'Fraunces', serif;
+      font-size: clamp(2rem, 4vw, 3.8rem);
+      font-weight: 700;
+      line-height: 1.08;
+      letter-spacing: -0.025em;
+    }
+
+    .featured-title em {
+      font-style: italic;
+      font-weight: 300;
+      color: var(--amber);
+    }
+
+    .featured-excerpt {
+      font-size: 1rem;
+      color: var(--muted);
+      line-height: 1.85;
+      max-width: 50ch;
+    }
+
+    .read-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-family: 'DM Mono', monospace;
+      font-size: 0.63rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--amber);
+      text-decoration: none;
+      border-bottom: 1px solid rgba(217,139,42,0.35);
+      padding-bottom: 0.15rem;
+      width: fit-content;
+      transition: color 0.2s, border-color 0.2s;
+    }
+
+    .read-link:hover { color: var(--gold); border-color: var(--gold); }
+    .read-link::after { content: '→'; transition: transform 0.2s; }
+    .read-link:hover::after { transform: translateX(4px); }
+
+    .featured-meta {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.6rem;
+      letter-spacing: 0.1em;
+      color: var(--muted);
+    }
+
+    .featured-visual {
+      position: relative;
+      min-height: 540px;
+      background: var(--earth);
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .featured-visual::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(ellipse at 40% 35%, rgba(192,78,32,0.35) 0%, transparent 60%),
+        radial-gradient(ellipse at 80% 75%, rgba(217,139,42,0.18) 0%, transparent 50%);
+    }
+
+    .vis-word {
+      font-family: 'Fraunces', serif;
+      font-size: clamp(6rem, 15vw, 15rem);
+      font-weight: 900;
+      font-style: italic;
+      color: rgba(240,232,216,0.04);
+      letter-spacing: -0.04em;
+      user-select: none;
+      line-height: 1;
+    }
+
+    .vis-index {
+      position: absolute;
+      bottom: 2rem;
+      right: 2rem;
+      font-family: 'DM Mono', monospace;
+      font-size: 0.58rem;
+      letter-spacing: 0.12em;
+      color: var(--muted);
+    }
+
+    /* ── ARTICLES HEADER ── */
+    .section-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 3rem 2.8rem 2.5rem;
+      border-bottom: 1px solid var(--rule);
+    }
+
+    .section-head h2 {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.63rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    .section-head a {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.63rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--amber);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+
+    .section-head a:hover { color: var(--gold); }
+
+    /* ── ARTICLES GRID ── */
+    .articles-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+    }
+
+    .article-card {
+      display: block;
+      text-decoration: none;
+      color: inherit;
+      padding: 3rem 2.8rem;
+      border-right: 1px solid var(--rule);
+      border-bottom: 1px solid var(--rule);
+      background: var(--black);
+      transition: background 0.3s;
+    }
+
+    .article-card:last-child { border-right: none; }
+    .article-card:hover { background: var(--dark); }
+
+    .card-num {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.58rem;
+      letter-spacing: 0.14em;
+      color: var(--muted);
+      margin-bottom: 2rem;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .card-num .ctag {
+      color: var(--rust);
+      letter-spacing: 0.18em;
+    }
+
+    .card-num::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--rule);
+    }
+
+    .card-title {
+      font-family: 'Fraunces', serif;
+      font-size: 1.55rem;
+      font-weight: 700;
+      line-height: 1.18;
+      letter-spacing: -0.015em;
+      margin-bottom: 1.2rem;
+    }
+
+    .card-title em {
+      font-style: italic;
+      font-weight: 300;
+      color: var(--amber);
+    }
+
+    .card-excerpt {
+      font-size: 0.88rem;
+      color: var(--muted);
+      line-height: 1.8;
+      margin-bottom: 2.5rem;
+    }
+
+    .card-foot {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-top: 1px solid var(--rule);
+      padding-top: 1rem;
+    }
+
+    .card-time {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.58rem;
+      letter-spacing: 0.1em;
+      color: var(--muted);
+    }
+
+    .card-arrow {
+      font-size: 1rem;
+      color: var(--amber);
+      transition: transform 0.2s;
+    }
+
+    .article-card:hover .card-arrow { transform: translate(3px, -3px); }
+
+    /* ── PULL QUOTE ── */
+    .pull-quote {
+      padding: 8rem 2.8rem;
+      border-bottom: 1px solid var(--rule);
+      display: grid;
+      grid-template-columns: 2fr 1fr;
+      gap: 4rem;
+      align-items: center;
+      background: var(--dark);
+    }
+
+    .pull-quote blockquote {
+      font-family: 'Fraunces', serif;
+      font-size: clamp(2rem, 5vw, 4.2rem);
+      font-weight: 300;
+      font-style: italic;
+      line-height: 1.18;
+      letter-spacing: -0.025em;
+      color: var(--cream);
+    }
+
+    .pull-quote blockquote strong {
+      font-weight: 900;
+      font-style: normal;
+      color: var(--amber);
+    }
+
+    .pull-right {
+      text-align: right;
+    }
+
+    .pull-label {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.6rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--rust);
+      margin-bottom: 0.8rem;
+    }
+
+    .pull-author {
+      font-family: 'Fraunces', serif;
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--cream);
+    }
+
+    /* ── PILLARS ── */
+    .pillars {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      border-bottom: 1px solid var(--rule);
+    }
+
+    .pillar {
+      padding: 3.5rem 2.8rem;
+      border-right: 1px solid var(--rule);
+      text-decoration: none;
+      color: inherit;
+      background: var(--black);
+      transition: background 0.3s;
+    }
+
+    .pillar:last-child { border-right: none; }
+    .pillar:hover { background: var(--earth); }
+
+    .pillar-num {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.6rem;
+      letter-spacing: 0.14em;
+      color: var(--rust);
+      margin-bottom: 2rem;
+    }
+
+    .pillar-name {
+      font-family: 'Fraunces', serif;
+      font-size: 1.7rem;
+      font-weight: 900;
+      letter-spacing: -0.025em;
+      line-height: 1.0;
+      margin-bottom: 1rem;
+      color: var(--cream);
+    }
+
+    .pillar-name em {
+      font-style: italic;
+      font-weight: 300;
+      color: var(--amber);
+    }
+
+    .pillar-desc {
+      font-size: 0.84rem;
+      color: var(--muted);
+      line-height: 1.75;
+      margin-bottom: 2.5rem;
+    }
+
+    .pillar-link {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.6rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--amber);
+      transition: color 0.2s;
+    }
+
+    .pillar:hover .pillar-link { color: var(--gold); }
+
+    /* ── NEWSLETTER ── */
+    .newsletter {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      border-bottom: 1px solid var(--rule);
+    }
+
+    .newsletter-left {
+      padding: 6rem 2.8rem;
+      border-right: 1px solid var(--rule);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      background: var(--rust);
+    }
+
+    .newsletter-label {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.63rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: rgba(240,232,216,0.6);
+      margin-bottom: 2rem;
+    }
+
+    .newsletter-title {
+      font-family: 'Fraunces', serif;
+      font-size: clamp(2.2rem, 5vw, 4.2rem);
+      font-weight: 900;
+      line-height: 0.98;
+      letter-spacing: -0.03em;
+      color: var(--cream);
+    }
+
+    .newsletter-title em {
+      font-style: italic;
+      font-weight: 300;
+    }
+
+    .newsletter-note {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.58rem;
+      letter-spacing: 0.1em;
+      color: rgba(240,232,216,0.5);
+    }
+
+    .newsletter-right {
+      padding: 6rem 2.8rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 1.4rem;
+      background: var(--earth);
+    }
+
+    .newsletter-right p {
+      font-size: 0.95rem;
+      color: var(--muted);
+      line-height: 1.85;
+    }
+
+    .form-row { display: flex; }
+
+    .form-row input {
+      flex: 1;
+      padding: 1rem 1.2rem;
+      background: rgba(240,232,216,0.04);
+      border: 1px solid var(--rule-bright);
+      border-right: none;
+      font-family: 'Instrument Serif', serif;
+      font-size: 0.95rem;
+      color: var(--cream);
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    .form-row input::placeholder { color: var(--muted); }
+    .form-row input:focus { border-color: var(--amber); }
+
+    .form-row button {
+      padding: 1rem 1.6rem;
+      background: var(--amber);
+      color: var(--black);
+      border: none;
+      font-family: 'DM Mono', monospace;
+      font-size: 0.63rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      cursor: none;
+      font-weight: 400;
+      transition: background 0.2s;
+    }
+
+    .form-row button:hover { background: var(--gold); }
+
+    .form-note {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.57rem;
+      letter-spacing: 0.1em;
+      color: var(--muted);
+    }
+
+    /* ── FOOTER ── */
+    footer {
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
+      align-items: center;
+      padding: 2.2rem 2.8rem;
+      background: var(--dark);
+      border-top: 1px solid var(--rule);
+    }
+
+    .footer-logo {
+      font-family: 'Fraunces', serif;
+      font-size: 1.2rem;
+      font-weight: 900;
+      color: var(--cream);
+      text-decoration: none;
+    }
+
+    .footer-logo span { color: var(--rust); }
+
+    .footer-copy {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.58rem;
+      letter-spacing: 0.1em;
+      color: var(--muted);
+    }
+
+    .footer-links {
+      display: flex;
+      justify-content: flex-end;
+      gap: 2rem;
+      list-style: none;
+    }
+
+    .footer-links a {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.6rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--muted);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+
+    .footer-links a:hover { color: var(--cream); }
+
+    /* ── REVEAL ── */
+    .reveal {
+      opacity: 0;
+      transform: translateY(22px);
+      transition: opacity 0.9s cubic-bezier(0.16,1,0.3,1), transform 0.9s cubic-bezier(0.16,1,0.3,1);
+    }
+
+    .reveal.visible { opacity: 1; transform: none; }
+    .d1 { transition-delay: 0.1s; }
+    .d2 { transition-delay: 0.2s; }
+    .d3 { transition-delay: 0.3s; }
+
+    @keyframes rise {
+      from { opacity: 0; transform: translateY(28px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ── COMING SOON ── */
+    .coming-soon {
+      padding: 8rem 2.8rem;
+      border-bottom: 1px solid var(--rule);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      gap: 2rem;
+    }
+
+    .coming-title {
+      font-family: 'Fraunces', serif;
+      font-size: clamp(2.5rem, 6vw, 5rem);
+      font-weight: 900;
+      line-height: 1.05;
+      letter-spacing: -0.03em;
+    }
+
+    .coming-title em {
+      font-style: italic;
+      font-weight: 300;
+      color: var(--amber);
+    }
+
+    .coming-desc {
+      font-size: 1rem;
+      color: var(--muted);
+      line-height: 1.85;
+      max-width: 44ch;
+    }
+
+    @media (max-width: 768px) {
+      .coming-soon { padding: 5rem 1.5rem; }
+    }
+
+    /* ── KITSCH / NOSTALGIQUE ── */
+
+    /* Tampon vintage dans le hero */
+    .hero-stamp {
+      position: absolute;
+      top: 7rem; right: 2.8rem;
+      width: 110px; height: 110px;
+      opacity: 0;
+      animation: rise 1s ease forwards 1.1s;
+    }
+    .hero-stamp svg { width: 100%; height: 100%; transform: rotate(-15deg); }
+
+    /* Drop cap sur l'extrait principal */
+    .featured-excerpt::first-letter {
+      font-family: 'Fraunces', serif;
+      font-size: 4.2rem;
+      font-weight: 900;
+      font-style: italic;
+      color: var(--rust);
+      float: left;
+      line-height: 0.75;
+      margin-right: 0.12em;
+      margin-top: 0.08em;
+    }
+
+    /* Bordures ornementales pull quote */
+    .pull-quote::before,
+    .pull-quote::after {
+      content: '';
+      position: absolute;
+      left: 2rem; right: 2rem;
+      height: 3px;
+      background: linear-gradient(90deg,
+        transparent 0%, var(--rust) 15%,
+        var(--amber) 50%,
+        var(--rust) 85%, transparent 100%);
+      opacity: 0.45;
+      z-index: 2;
+    }
+    .pull-quote::before { top: 2rem; }
+    .pull-quote::after  { bottom: 2rem; }
+
+    /* Étiquette timbre sur la featured visual */
+    .vis-stamp {
+      position: absolute;
+      top: 2rem; left: 2rem;
+      border: 1.5px solid rgba(240,232,216,0.22);
+      padding: 0.45rem 0.75rem;
+      font-family: 'DM Mono', monospace;
+      font-size: 0.52rem;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: rgba(240,232,216,0.35);
+    }
+
+    /* Cachet rond tournant sur newsletter */
+    .nl-seal {
+      position: absolute;
+      bottom: 2.2rem; right: 2.2rem;
+      width: 88px; height: 88px;
+      opacity: 0.55;
+    }
+    .nl-seal svg { width: 100%; height: 100%; animation: slowSpin 30s linear infinite; }
+    @keyframes slowSpin {
+      from { transform: rotate(0deg); }
+      to   { transform: rotate(360deg); }
+    }
+
+    /* Filet ornemental footer */
+    .footer-ornament {
+      text-align: center;
+      font-size: 1rem;
+      color: var(--rust);
+      opacity: 0.5;
+      letter-spacing: 0.6em;
+      padding: 1.2rem 2.8rem;
+      border-bottom: 1px solid var(--rule);
+      background: var(--dark);
+    }
+
+    /* Badge "Édition" sur un article */
+    .badge-retro {
+      display: inline-block;
+      background: var(--amber);
+      color: var(--black);
+      font-family: 'DM Mono', monospace;
+      font-size: 0.5rem;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      padding: 0.18rem 0.55rem;
+      margin-bottom: 0.6rem;
+    }
+
+    /* Ornement séparateur */
+    .ornament {
+      text-align: center;
+      padding: 1.8rem 0;
+      font-size: 1.1rem;
+      color: var(--rust);
+      opacity: 0.55;
+      letter-spacing: 0.5em;
+      border-bottom: 1px solid var(--rule);
+    }
+
+    /* Pull quote papier jauni */
+    .pull-quote {
+      background: linear-gradient(135deg, var(--dark) 0%, #1a150e 100%);
+    }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 1024px) {
+      .featured-section { grid-template-columns: 1fr; }
+      .featured-visual { min-height: 280px; border-top: 1px solid var(--rule); }
+      .articles-grid { grid-template-columns: 1fr 1fr; }
+      .articles-grid .article-card:nth-child(2) { border-right: none; }
+      .pillars { grid-template-columns: 1fr 1fr; }
+      .pillars .pillar:nth-child(2) { border-right: none; }
+      .pillars .pillar:nth-child(3) { border-right: 1px solid var(--rule); }
+      .pull-quote { grid-template-columns: 1fr; gap: 2.5rem; }
+      .pull-right { text-align: left; }
+    }
+
+    @media (max-width: 768px) {
+      nav { grid-template-columns: 1fr auto; padding: 1.2rem 1.5rem; }
+      .nav-edition, .nav-right { display: none; }
+      .hero { padding: 0 1.5rem 2.5rem; }
+      .hero-foot { grid-template-columns: 1fr; }
+      .hero-vol, .hero-cta-wrap { display: none; }
+      .featured-section, .articles-grid, .pillars, .newsletter { grid-template-columns: 1fr; }
+      .featured-text, .newsletter-left, .newsletter-right { padding: 3rem 1.5rem; border-right: none; border-bottom: 1px solid var(--rule); }
+      .articles-grid .article-card { border-right: none; }
+      .pillar { border-right: none; }
+      .pull-quote { padding: 5rem 1.5rem; }
+      .section-head { padding: 2.5rem 1.5rem; }
+      .article-card { padding: 2.5rem 1.5rem; }
+      footer { grid-template-columns: 1fr; gap: 1rem; padding: 2rem 1.5rem; }
+      .footer-copy, .footer-links { display: none; }
+      body { cursor: auto; }
+      .cursor { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="cursor" id="cursor"></div>
+
+  <!-- NAV -->
+  <nav>
+    <span class="nav-edition">Vol. I — Fév. 2026</span>
+    <div class="nav-center">
+      <a href="#">Voie de Traverse<span>.</span></a>
+    </div>
+    <div class="nav-right">
+      <a href="articles/operation-nirvana.html">Articles</a>
+      <a href="#">À propos</a>
+    </div>
+  </nav>
+
+  <!-- HERO -->
+  <section class="hero">
+
+    <div class="hero-center">
+      <p class="hero-kicker">Aventure · Sport · Philosophie</p>
+      <h1 class="hero-title">
+        Dévier<br>sans se<br><span class="ital">perdre.</span>
+      </h1>
+    </div>
+    <div class="hero-foot">
+      <p class="hero-desc">Des textes pour ceux qui refusent la vie tiède. Sur l'effort, l'aventure et l'art de brûler sans compter.</p>
+      <div class="hero-vol">
+        <p>Numéro</p>
+        <span class="bignum">01</span>
+      </div>
+      <div class="hero-cta-wrap">
+        <a class="btn-primary" href="articles/operation-nirvana.html">Lire les articles</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Bandeau mythologie grecque -->
+  <div class="greek-band">
+    <div class="greek-inner">
+      <svg viewBox="0 0 1400 64" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet">
+        <!-- Bordure haut -->
+        <line x1="0" y1="4" x2="1400" y2="4" stroke="#C04E20" stroke-width="1" opacity="0.6"/>
+        <!-- Motif méandre grec répété -->
+        <path d="
+          M0,20 h8 v8 h-8 v8 h16 v-16 h8 v24 h-32 v-8 h8 v-8 h-8z
+          M40,20 h8 v8 h-8 v8 h16 v-16 h8 v24 h-32 v-8 h8 v-8 h-8z
+          M80,20 h8 v8 h-8 v8 h16 v-16 h8 v24 h-32 v-8 h8 v-8 h-8z
+          M120,20 h8 v8 h-8 v8 h16 v-16 h8 v24 h-32 v-8 h8 v-8 h-8z
+          M160,20 h8 v8 h-8 v8 h16 v-16 h8 v24 h-32 v-8 h8 v-8 h-8z
+          M200,20 h8 v8 h-8 v8 h16 v-16 h8 v24 h-32 v-8 h8 v-8 h-8z
+          M240,20 h8 v8 h-8 v8 h16 v-16 h8 v24 h-32 v-8 h8 v-8 h-8z
+          M280,20 h8 v8 h-8 v8 h16 v-16 h8 v24 h-32 v-8 h8 v-8 h-8z
+          M320,20 h8 v8 h-8 v8 h16 v-16 h8 v24 h-32 v-8 h8 v-8 h-8z
+          M360,20 h8 v8 h-8 v8 h16 v-16 h8 v24 h-32 v-8 h8 v-8 h-8z
+          M400,20 h8 v8 h-8 v8 h16 v-16 h8 v24 h-32 v-8 h8 v-8 h-8z
+          M440,20 h8 v8 h-8 v8 h16 v-16 h8 v24 h-32 v-8 h8 v-8 h-8z
+          M480,20 h8 v8 h-8 v8 h16 v-16 h8 v24 h-32 v-8 h8 v-8 h-8z
+          M520,20 h8 v8 h-8 v8 h16 v-16 h8 v24 h-32 v-8 h8 v-8 h-8z
+          M560,20 h8 v8 h-8 v8 h16 v-16 h8 v24 h-32 v-8 h8 v-8 h-8z
+          M600,20 h8 v8 h-8 v8 h16 v-16 h8 v24 h-32 v-8 h8 v-8 h-8z
+          M640,20 h8 v8 h-8 v8 h16 v-16 h8 v24 h-32 v-8 h8 v-8 h-8z
+          M680,20 h8 v8 h-8 v8 h16 v-16 h8 v24 h-32 v-8 h8 v-8 h-8z
+          M720,20 h8 v8 h-8 v8 h16 v-16 h8 v24 h-32 v-8 h8 v-8 h-8z
+          M760,20 h8 v8 h-8 v8 h16 v-16 h8 v24 h-32 v-8 h8 v-8 h-8z
+          M800,20 h8 v8 h-8 v8 h16 v-16 h8 v24 h-32 v-8 h8 v-8 h-8z
+          M840,20 h8 v8 h-8 v8 h16 v-16 h8 v24 h-32 v-8 h8 v-8 h-8z
+          M880,20 h8 v8 h-8 v8 h16 v-16 h8 v24 h-32 v-8 h8 v-8 h-8z
+          M920,20 h8 v8 h-8 v8 h16 v-16 h8 v24 h-32 v-8 h8 v-8 h-8z
+          M960,20 h8 v8 h-8 v8 h16 v-16 h8 v24 h-32 v-8 h8 v-8 h-8z
+          M1000,20 h8 v8 h-8 v8 h16 v-16 h8 v24 h-32 v-8 h8 v-8 h-8z
+          M1040,20 h8 v8 h-8 v8 h16 v-16 h8 v24 h-32 v-8 h8 v-8 h-8z
+          M1080,20 h8 v8 h-8 v8 h16 v-16 h8 v24 h-32 v-8 h8 v-8 h-8z
+          M1120,20 h8 v8 h-8 v8 h16 v-16 h8 v24 h-32 v-8 h8 v-8 h-8z
+          M1160,20 h8 v8 h-8 v8 h16 v-16 h8 v24 h-32 v-8 h8 v-8 h-8z
+          M1200,20 h8 v8 h-8 v8 h16 v-16 h8 v24 h-32 v-8 h8 v-8 h-8z
+          M1240,20 h8 v8 h-8 v8 h16 v-16 h8 v24 h-32 v-8 h8 v-8 h-8z
+          M1280,20 h8 v8 h-8 v8 h16 v-16 h8 v24 h-32 v-8 h8 v-8 h-8z
+          M1320,20 h8 v8 h-8 v8 h16 v-16 h8 v24 h-32 v-8 h8 v-8 h-8z
+          M1360,20 h8 v8 h-8 v8 h16 v-16 h8 v24 h-32 v-8 h8 v-8 h-8z
+        " fill="none" stroke="#D98B2A" stroke-width="1.2" opacity="0.55"/>
+        <!-- Bordure bas -->
+        <line x1="0" y1="60" x2="1400" y2="60" stroke="#C04E20" stroke-width="1" opacity="0.6"/>
+      </svg>
+    </div>
+  </div>
+
+  <!-- Ornement séparateur -->
+  <div class="ornament">✦ &nbsp; ✦ &nbsp; ✦</div>
+
+  <!-- PREMIER ARTICLE -->
+  <section class="coming-soon reveal">
+    <p class="tag" style="margin-bottom:2rem">Articles · N°001</p>
+    <h2 class="coming-title">Opération<br><em>Nirvana</em></h2>
+    <p class="coming-desc">Une IA lucide qui calcule que notre prospérité technologique nous étouffe. Et décide d'agir.</p>
+    <a class="btn-primary" href="articles/operation-nirvana.html" style="margin-top:1rem">Lire l'article</a>
+  </section>
+
+  <!-- Ornement -->
+  <div class="ornament">❧ &nbsp; ❧ &nbsp; ❧</div>
+
+  <!-- FOOTER -->
+  <div class="footer-ornament">— ✦ ✦ ✦ —</div>
+  <footer>
+    <a class="footer-logo" href="#">Voie de Traverse<span>.</span></a>
+    <p class="footer-copy">© 2026 — Voie de Traverse — Vol. I</p>
+    <ul class="footer-links">
+      <li><a href="#">Articles</a></li>
+      <li><a href="#">À propos</a></li>
+      <li><a href="#">Contact</a></li>
+    </ul>
+  </footer>
+
+  <script>
+    // Cursor
+    const cur = document.getElementById('cursor');
+    document.addEventListener('mousemove', e => {
+      cur.style.left = e.clientX + 'px';
+      cur.style.top  = e.clientY + 'px';
+    });
+    document.querySelectorAll('a, button').forEach(el => {
+      el.addEventListener('mouseenter', () => cur.classList.add('expanded'));
+      el.addEventListener('mouseleave', () => cur.classList.remove('expanded'));
+    });
+
+    // Scroll reveal
+    const obs = new IntersectionObserver(entries => {
+      entries.forEach(e => {
+        if (e.isIntersecting) { e.target.classList.add('visible'); obs.unobserve(e.target); }
+      });
+    }, { threshold: 0.08 });
+    document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
+  </script>
+</body>
+</html>
