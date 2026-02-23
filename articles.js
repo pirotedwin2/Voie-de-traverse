@@ -9,6 +9,16 @@
 
 const ARTICLES = [
   {
+    numero: "002",
+    titre: "Es-tu un French Dreamer ?",
+    tag: "Société",
+    extrait: "Un rôle social façonné par l'affichage, les codes importés et la réussite mise en scène.",
+    date: "Février 2026",
+    lecture: "2 min",
+    fichier: "articles/french-dreamer.html"
+  },
+
+  {
     numero: "001",
     titre: "Opération Nirvana",
     tag: "Philosophie",

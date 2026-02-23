@@ -455,6 +455,12 @@
       margin-bottom: 2.5rem;
     }
 
+    .card-excerpt code {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.8em;
+      color: var(--amber);
+    }
+
     .card-foot {
       display: flex;
       align-items: center;
@@ -940,7 +946,7 @@
       <a href="#">Voie de Traverse<span>.</span></a>
     </div>
     <div class="nav-right">
-      <a href="articles/operation-nirvana.html">Articles</a>
+      <a href="#articles">Articles</a>
       <a href="#">À propos</a>
     </div>
   </nav>
@@ -961,7 +967,7 @@
         <span class="bignum">01</span>
       </div>
       <div class="hero-cta-wrap">
-        <a class="btn-primary" href="articles/operation-nirvana.html">Lire les articles</a>
+        <a class="btn-primary" href="#articles">Lire les articles</a>
       </div>
     </div>
   </section>
@@ -1019,12 +1025,23 @@
   <!-- Ornement séparateur -->
   <div class="ornament">✦ &nbsp; ✦ &nbsp; ✦</div>
 
-  <!-- PREMIER ARTICLE -->
-  <section class="coming-soon reveal">
-    <p class="tag" style="margin-bottom:2rem">Articles · N°001</p>
-    <h2 class="coming-title">Opération<br><em>Nirvana</em></h2>
-    <p class="coming-desc">Une IA lucide qui calcule que notre prospérité technologique nous étouffe. Et décide d'agir.</p>
-    <a class="btn-primary" href="articles/operation-nirvana.html" style="margin-top:1rem">Lire l'article</a>
+  <!-- ARTICLES -->
+  <section id="articles" class="reveal">
+    <div class="section-head">
+      <h2>Articles</h2>
+      <a href="#articles" id="articlesCount">Chargement…</a>
+    </div>
+    <div class="articles-grid" id="articlesGrid">
+      <div class="article-card">
+        <div class="card-num"><span class="ctag">CHARGEMENT</span></div>
+        <h3 class="card-title">Chargement des articles…</h3>
+        <p class="card-excerpt">Le site récupère la liste automatiquement depuis <code>articles.js</code>.</p>
+        <div class="card-foot">
+          <span class="card-time">Veuillez patienter</span>
+          <span class="card-arrow">↗</span>
+        </div>
+      </div>
+    </div>
   </section>
 
   <!-- Ornement -->
@@ -1036,11 +1053,13 @@
     <a class="footer-logo" href="#">Voie de Traverse<span>.</span></a>
     <p class="footer-copy">© 2026 — Voie de Traverse — Vol. I</p>
     <ul class="footer-links">
-      <li><a href="#">Articles</a></li>
+      <li><a href="#articles">Articles</a></li>
       <li><a href="#">À propos</a></li>
       <li><a href="#">Contact</a></li>
     </ul>
   </footer>
+
+  <script src="articles.js"></script>
 
   <script>
     // Cursor
@@ -1054,7 +1073,38 @@
       el.addEventListener('mouseleave', () => cur.classList.remove('expanded'));
     });
 
+
+    // Articles (chargés depuis articles.js)
+    function renderArticles() {
+      const grid = document.getElementById('articlesGrid');
+      const count = document.getElementById('articlesCount');
+      const heroNum = document.querySelector('.hero-vol .bignum');
+
+      const items = (typeof ARTICLES !== 'undefined') ? ARTICLES : [];
+      if (!grid || !Array.isArray(items)) return;
+
+      if (count) count.textContent = `${items.length} article${items.length > 1 ? 's' : ''}`;
+      if (heroNum && items[0]?.numero) heroNum.textContent = items[0].numero;
+
+      grid.innerHTML = items.map(article => `
+        <a class="article-card" href="${article.fichier}">
+          <div class="card-num">
+            <span>N°${article.numero}</span>
+            ${article.tag ? `<span class="ctag">${article.tag}</span>` : ''}
+          </div>
+          <h3 class="card-title">${String(article.titre || '').replace('French Dreamer', '<em>French Dreamer</em>')}</h3>
+          <p class="card-excerpt">${article.extrait || ''}</p>
+          <div class="card-foot">
+            <span class="card-time">${article.date || ''}${article.lecture ? ' · ' + article.lecture : ''}</span>
+            <span class="card-arrow">↗</span>
+          </div>
+        </a>
+      `).join('');
+    }
+
     // Scroll reveal
+    renderArticles();
+
     const obs = new IntersectionObserver(entries => {
       entries.forEach(e => {
         if (e.isIntersecting) { e.target.classList.add('visible'); obs.unobserve(e.target); }
