@@ -1156,12 +1156,19 @@
 
       grid.innerHTML = items.map(article => `
         <a class="article-card" href="${article.fichier}">
+<<<<<<< HEAD
           ${article.image ? `<div class="card-image-wrap"><img class="card-image" src="${article.image}" alt="${article.imageAlt || article.titre || ''}"></div>` : ''}
+=======
+>>>>>>> d28959f5f9dcc5b2f0fa0f2159038333b27ef59f
           <div class="card-num">
             <span>N°${article.numero}</span>
             ${article.tag ? `<span class="ctag">${article.tag}</span>` : ''}
           </div>
+<<<<<<< HEAD
           <h3 class="card-title">${article.titre || ''}</h3>
+=======
+          <h3 class="card-title">${String(article.titre || '').replace('French Dreamer', '<em>French Dreamer</em>')}</h3>
+>>>>>>> d28959f5f9dcc5b2f0fa0f2159038333b27ef59f
           <p class="card-excerpt">${article.extrait || ''}</p>
           <div class="card-foot">
             <span class="card-time">${article.date || ''}${article.lecture ? ' · ' + article.lecture : ''}</span>
