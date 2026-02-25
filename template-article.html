@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Titre de l’article — Voie de Traverse</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,700;0,9..144,900;1,9..144,300;1,9..144,700;1,9..144,900&family=DM+Mono:wght@300;400&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --black:   #0B0A08;
+      --dark:    #141210;
+      --earth:   #1E1A14;
+      --rust:    #C04E20;
+      --amber:   #D98B2A;
+      --gold:    #E8A93A;
+      --cream:   #F0E8D8;
+      --muted:   #7A6E60;
+      --rule:    rgba(240,232,216,0.10);
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--black);
+      color: var(--cream);
+      font-family: 'Instrument Serif', serif;
+      line-height: 1.7;
+      -webkit-font-smoothing: antialiased;
+      cursor: none;
+      overflow-x: hidden;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      pointer-events: none;
+      opacity: 0.04;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+      background-size: 180px;
+    }
+
+    * { position: relative; z-index: 1; }
+
+    /* CURSOR */
+    .cursor {
+      position: fixed;
+      top: 0; left: 0;
+      width: 9px; height: 9px;
+      background: var(--rust);
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 9999;
+      transform: translate(-50%, -50%);
+      transition: width 0.35s ease, height 0.35s ease;
+      mix-blend-mode: screen;
+    }
+    .cursor.expanded { width: 44px; height: 44px; background: rgba(192,78,32,0.25); }
+
+    /* NAV */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
+      align-items: center;
+      padding: 1.6rem 2.8rem;
+      background: rgba(11,10,8,0.88);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--rule);
+    }
+
+    .nav-back {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.63rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--muted);
+      text-decoration: none;
+      transition: color 0.2s;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .nav-back::before { content: '←'; }
+    .nav-back:hover { color: var(--cream); }
+
+    .nav-center a {
+      font-family: 'Fraunces', serif;
+      font-size: 1.3rem;
+      font-weight: 900;
+      letter-spacing: 0.04em;
+      color: var(--cream);
+      text-decoration: none;
+    }
+    .nav-center a span { color: var(--rust); }
+
+    .nav-right {
+      display: flex;
+      justify-content: flex-end;
+    }
+    .nav-tag {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.6rem;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--rust);
+    }
+
+    /* BANDEAU GREC */
+    .greek-band {
+      width: 100%;
+      overflow: hidden;
+      background: var(--dark);
+      border-bottom: 1px solid var(--rule);
+      line-height: 0;
+      margin-top: 72px;
+    }
+    .greek-band svg { width: 100%; height: 64px; display: block; }
+
+    /* ARTICLE HEADER */
+    .article-header {
+      max-width: 820px;
+      margin: 0 auto;
+      padding: 6rem 2.8rem 4rem;
+      opacity: 0;
+      animation: rise 1s ease forwards 0.3s;
+    }
+
+    .article-kicker {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.62rem;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--rust);
+      margin-bottom: 2rem;
+      display: flex;
+      align-items: center;
+      gap: 1.5rem;
+    }
+
+    .article-kicker::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--rule);
+      max-width: 80px;
+    }
+
+    .article-title {
+      font-family: 'Fraunces', serif;
+      font-size: clamp(2.8rem, 7vw, 5.5rem);
+      font-weight: 900;
+      line-height: 0.95;
+      letter-spacing: -0.035em;
+      margin-bottom: 2.5rem;
+    }
+
+    .article-title em {
+      font-style: italic;
+      font-weight: 300;
+      color: var(--amber);
+      display: block;
+    }
+
+    .article-meta {
+      display: flex;
+      align-items: center;
+      gap: 2rem;
+      padding-top: 2rem;
+      border-top: 1px solid var(--rule);
+    }
+
+    .article-meta span {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.6rem;
+      letter-spacing: 0.12em;
+      color: var(--muted);
+    }
+
+    .article-meta .dot { color: var(--rust); }
+
+    /* ORNEMENT */
+    .ornament {
+      text-align: center;
+      padding: 1.5rem 0;
+      font-size: 1.1rem;
+      color: var(--rust);
+      opacity: 0.55;
+      letter-spacing: 0.5em;
+      max-width: 820px;
+      margin: 0 auto;
+    }
+
+    /* ARTICLE BODY */
+    .article-body {
+      max-width: 820px;
+      margin: 0 auto;
+      padding: 3rem 2.8rem 8rem;
+      opacity: 0;
+      animation: rise 1s ease forwards 0.6s;
+    }
+
+    .article-body p {
+      font-size: 1.15rem;
+      line-height: 1.9;
+      color: var(--cream);
+      margin-bottom: 2rem;
+    }
+
+    /* Drop cap */
+    .article-body p:first-child::first-letter {
+      font-family: 'Fraunces', serif;
+      font-size: 5rem;
+      font-weight: 900;
+      font-style: italic;
+      color: var(--rust);
+      float: left;
+      line-height: 0.75;
+      margin-right: 0.1em;
+      margin-top: 0.1em;
+    }
+
+    /* Pull quote interne */
+    .pull {
+      border-left: 2px solid var(--rust);
+      padding: 1.5rem 2rem;
+      margin: 3rem 0;
+      background: var(--earth);
+    }
+
+    .pull p {
+      font-family: 'Fraunces', serif;
+      font-size: 1.4rem !important;
+      font-style: italic;
+      font-weight: 300;
+      color: var(--amber) !important;
+      margin: 0 !important;
+      line-height: 1.4 !important;
+    }
+
+    /* Séparateur fin de texte */
+    .article-end {
+      display: flex;
+      align-items: center;
+      gap: 1.5rem;
+      margin-top: 4rem;
+      padding-top: 2rem;
+      border-top: 1px solid var(--rule);
+    }
+
+    .article-end span {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.6rem;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    .article-end::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--rule);
+    }
+
+    /* RETOUR */
+    .back-section {
+      max-width: 820px;
+      margin: 0 auto;
+      padding: 0 2.8rem 6rem;
+    }
+
+    .back-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.7rem;
+      font-family: 'DM Mono', monospace;
+      font-size: 0.65rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--amber);
+      text-decoration: none;
+      border-bottom: 1px solid rgba(217,139,42,0.3);
+      padding-bottom: 0.15rem;
+      transition: color 0.2s, border-color 0.2s;
+    }
+    .back-link::before { content: '←'; }
+    .back-link:hover { color: var(--gold); border-color: var(--gold); }
+
+    /* FOOTER */
+    .footer-ornament {
+      text-align: center;
+      font-size: 1rem;
+      color: var(--rust);
+      opacity: 0.5;
+      letter-spacing: 0.6em;
+      padding: 1.2rem 2.8rem;
+      border-top: 1px solid var(--rule);
+      border-bottom: 1px solid var(--rule);
+      background: var(--dark);
+    }
+
+    footer {
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
+      align-items: center;
+      padding: 2.2rem 2.8rem;
+      background: var(--dark);
+    }
+
+    .footer-logo {
+      font-family: 'Fraunces', serif;
+      font-size: 1.2rem;
+      font-weight: 900;
+      color: var(--cream);
+      text-decoration: none;
+    }
+    .footer-logo span { color: var(--rust); }
+
+    .footer-copy {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.58rem;
+      letter-spacing: 0.1em;
+      color: var(--muted);
+      text-align: center;
+    }
+
+    /* IMAGE HERO */
+    .article-image {
+      max-width: 820px;
+      margin: 0 auto 0;
+      padding: 0 2.8rem;
+    }
+
+    .article-image img {
+      width: 100%;
+      display: block;
+      border: 1px solid var(--rule);
+      filter: grayscale(15%);
+    }
+
+    @media (max-width: 768px) {
+      .article-image { padding: 0 1.5rem; }
+    }
+
+    @keyframes rise {
+      from { opacity: 0; transform: translateY(24px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    @media (max-width: 768px) {
+      nav { grid-template-columns: auto 1fr; padding: 1.2rem 1.5rem; }
+      .nav-right { display: none; }
+      .nav-center { text-align: right; }
+      .article-header, .article-body, .back-section { padding-left: 1.5rem; padding-right: 1.5rem; }
+      .article-header { padding-top: 5rem; }
+      body { cursor: auto; }
+      .cursor { display: none; }
+      footer { grid-template-columns: 1fr; gap: 0.8rem; padding: 2rem 1.5rem; }
+      .footer-copy { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="cursor" id="cursor"></div>
+
+  <!-- NAV -->
+  <nav>
+    <a class="nav-back" href="../index.html">Accueil</a>
+    <div class="nav-center">
+      <a href="../index.html">Voie de Traverse<span>.</span></a>
+    </div>
+    <div class="nav-right">
+      <span class="nav-tag">Catégorie</span>
+    </div>
+  </nav>
+
+  <!-- BANDEAU GREC -->
+  <div class="greek-band">
+    <svg viewBox="0 0 1400 64" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet">
+      <line x1="0" y1="4" x2="1400" y2="4" stroke="#C04E20" stroke-width="1" opacity="0.6"/>
+      <path d="
+        M0,20 h8 v8 h-8 v8 h16 v-16 h8 v24 h-32 v-8 h8 v-8 h-8z
+        M40,20 h8 v8 h-8 v8 h16 v-16 h8 v24 h-32 v-8 h8 v-8 h-8z
+        M80,20 h8 v8 h-8 v8 h16 v-16 h8 v24 h-32 v-8 h8 v-8 h-8z
+        M120,20 h8 v8 h-8 v8 h16 v-16 h8 v24 h-32 v-8 h8 v-8 h-8z
+        M160,20 h8 v8 h-8 v8 h16 v-16 h8 v24 h-32 v-8 h8 v-8 h-8z
+        M200,20 h8 v8 h-8 v8 h16 v-16 h8 v24 h-32 v-8 h8 v-8 h-8z
+        M240,20 h8 v8 h-8 v8 h16 v-16 h8 v24 h-32 v-8 h8 v-8 h-8z
+        M280,20 h8 v8 h-8 v8 h16 v-16 h8 v24 h-32 v-8 h8 v-8 h-8z
+        M320,20 h8 v8 h-8 v8 h16 v-16 h8 v24 h-32 v-8 h8 v-8 h-8z
+        M360,20 h8 v8 h-8 v8 h16 v-16 h8 v24 h-32 v-8 h8 v-8 h-8z
+        M400,20 h8 v8 h-8 v8 h16 v-16 h8 v24 h-32 v-8 h8 v-8 h-8z
+        M440,20 h8 v8 h-8 v8 h16 v-16 h8 v24 h-32 v-8 h8 v-8 h-8z
+        M480,20 h8 v8 h-8 v8 h16 v-16 h8 v24 h-32 v-8 h8 v-8 h-8z
+        M520,20 h8 v8 h-8 v8 h16 v-16 h8 v24 h-32 v-8 h8 v-8 h-8z
+        M560,20 h8 v8 h-8 v8 h16 v-16 h8 v24 h-32 v-8 h8 v-8 h-8z
+        M600,20 h8 v8 h-8 v8 h16 v-16 h8 v24 h-32 v-8 h8 v-8 h-8z
+        M640,20 h8 v8 h-8 v8 h16 v-16 h8 v24 h-32 v-8 h8 v-8 h-8z
+        M680,20 h8 v8 h-8 v8 h16 v-16 h8 v24 h-32 v-8 h8 v-8 h-8z
+        M720,20 h8 v8 h-8 v8 h16 v-16 h8 v24 h-32 v-8 h8 v-8 h-8z
+        M760,20 h8 v8 h-8 v8 h16 v-16 h8 v24 h-32 v-8 h8 v-8 h-8z
+        M800,20 h8 v8 h-8 v8 h16 v-16 h8 v24 h-32 v-8 h8 v-8 h-8z
+        M840,20 h8 v8 h-8 v8 h16 v-16 h8 v24 h-32 v-8 h8 v-8 h-8z
+        M880,20 h8 v8 h-8 v8 h16 v-16 h8 v24 h-32 v-8 h8 v-8 h-8z
+        M920,20 h8 v8 h-8 v8 h16 v-16 h8 v24 h-32 v-8 h8 v-8 h-8z
+        M960,20 h8 v8 h-8 v8 h16 v-16 h8 v24 h-32 v-8 h8 v-8 h-8z
+        M1000,20 h8 v8 h-8 v8 h16 v-16 h8 v24 h-32 v-8 h8 v-8 h-8z
+        M1040,20 h8 v8 h-8 v8 h16 v-16 h8 v24 h-32 v-8 h8 v-8 h-8z
+        M1080,20 h8 v8 h-8 v8 h16 v-16 h8 v24 h-32 v-8 h8 v-8 h-8z
+        M1120,20 h8 v8 h-8 v8 h16 v-16 h8 v24 h-32 v-8 h8 v-8 h-8z
+        M1160,20 h8 v8 h-8 v8 h16 v-16 h8 v24 h-32 v-8 h8 v-8 h-8z
+        M1200,20 h8 v8 h-8 v8 h16 v-16 h8 v24 h-32 v-8 h8 v-8 h-8z
+        M1240,20 h8 v8 h-8 v8 h16 v-16 h8 v24 h-32 v-8 h8 v-8 h-8z
+        M1280,20 h8 v8 h-8 v8 h16 v-16 h8 v24 h-32 v-8 h8 v-8 h-8z
+        M1320,20 h8 v8 h-8 v8 h16 v-16 h8 v24 h-32 v-8 h8 v-8 h-8z
+        M1360,20 h8 v8 h-8 v8 h16 v-16 h8 v24 h-32 v-8 h8 v-8 h-8z
+      " fill="none" stroke="#D98B2A" stroke-width="1.2" opacity="0.55"/>
+      <line x1="0" y1="60" x2="1400" y2="60" stroke="#C04E20" stroke-width="1" opacity="0.6"/>
+    </svg>
+  </div>
+
+  <!-- HEADER ARTICLE -->
+  <header class="article-header">
+    <p class="article-kicker">Catégorie &nbsp;·&nbsp; N°XXX</p>
+    <h1 class="article-title">
+      Titre de<br><em>l’article</em>
+    </h1>
+    <div class="article-meta">
+      <span>Edwin</span>
+      <span class="dot">·</span>
+      <span>Mois 2026</span>
+      <span class="dot">·</span>
+      <span>X min de lecture</span>
+    </div>
+  </header>
+
+  <div class="ornament">✦ &nbsp; ✦ &nbsp; ✦</div>
+  <!-- IMAGE HERO (optionnel)
+  <div class="article-image">
+    <img src="../images/mon-image.png" alt="Titre de l’article" />
+  </div>
+  -->
+
+  <!-- CORPS DE L'ARTICLE -->
+    <article class="article-body">
+
+    <p>Premier paragraphe…</p>
+
+    <p>Deuxième paragraphe…</p>
+
+    <p>Troisième paragraphe…</p>
+
+    <div class="article-end">
+      <span>Fin de l'article</span>
+    </div>
+
+  </article>
+
+  <!-- RETOUR -->
+  <div class="back-section">
+    <a class="back-link" href="../index.html">Retour à l'accueil</a>
+  </div>
+
+  <!-- FOOTER -->
+  <div class="footer-ornament">— ✦ ✦ ✦ —</div>
+  <footer>
+    <a class="footer-logo" href="../index.html">Voie de Traverse<span>.</span></a>
+    <p class="footer-copy">© 2026 — Voie de Traverse — Vol. I</p>
+  </footer>
+
+  <script>
+    const cur = document.getElementById('cursor');
+    document.addEventListener('mousemove', e => {
+      cur.style.left = e.clientX + 'px';
+      cur.style.top  = e.clientY + 'px';
+    });
+    document.querySelectorAll('a').forEach(el => {
+      el.addEventListener('mouseenter', () => cur.classList.add('expanded'));
+      el.addEventListener('mouseleave', () => cur.classList.remove('expanded'));
+    });
+  </script>
+</body>
+</html>
