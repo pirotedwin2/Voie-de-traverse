@@ -8,13 +8,15 @@
 // ============================================
 
 const ARTICLES = [
-  {
+{
     numero: "001",
     titre: "Opération Nirvana",
-    tag: "Philosophie",
+    tag: "Vision",
     extrait: "Une IA lucide qui calcule que notre prospérité technologique nous étouffe. Et décide d'agir.",
     date: "Février 2026",
     lecture: "3 min",
+    image: "images/photo-article-1.png",
+    imageAlt: "Image de présentation Voie de Traverse",
     fichier: "articles/operation-nirvana.html"
   },
 
@@ -22,10 +24,11 @@ const ARTICLES = [
   // {
   //   numero: "002",
   //   titre: "Titre de l'article",
-  //   tag: "Aventure",
+  //   tag: "Vision",
   //   extrait: "Courte description de l'article...",
   //   date: "Mars 2026",
   //   lecture: "5 min",
+  //   image: "images/nom-image.png",
   //   fichier: "articles/nom-du-fichier.html"
   // },
 ];
