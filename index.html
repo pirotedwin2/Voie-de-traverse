@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Voie de Traverse — Vol. I</title>
+  <title>Voie de Traverse</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,700;0,9..144,900;1,9..144,300;1,9..144,700;1,9..144,900&family=DM+Mono:wght@300;400&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet" />
@@ -165,38 +165,6 @@
       font-weight: 300;
       color: var(--amber);
       display: block;
-    }
-
-
-    .hero-visual-frame {
-      margin-top: 2rem;
-      width: min(680px, 100%);
-      aspect-ratio: 16 / 8.5;
-      border: 1px solid var(--rule-bright);
-      background: var(--earth);
-      overflow: hidden;
-      box-shadow: 0 30px 70px rgba(0,0,0,0.35);
-      opacity: 0;
-      animation: rise 1.05s ease forwards 0.65s;
-    }
-
-    .hero-visual-frame::after {
-      content: '';
-      position: absolute;
-      inset: 0;
-      pointer-events: none;
-      background:
-        linear-gradient(to top, rgba(11,10,8,0.55), rgba(11,10,8,0.12) 45%, rgba(11,10,8,0.18)),
-        radial-gradient(circle at 15% 20%, rgba(217,139,42,0.16), transparent 55%);
-    }
-
-    .hero-visual-img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      display: block;
-      filter: saturate(0.9) contrast(1.05) brightness(0.9);
-      transform: scale(1.02);
     }
 
     .hero-foot {
@@ -393,6 +361,62 @@
       color: var(--muted);
     }
 
+    .hero-presentation {
+      padding: 0 2.8rem 0;
+      border-bottom: 1px solid var(--rule);
+    }
+
+    .hero-shot {
+      position: relative;
+      overflow: hidden;
+      border: 1px solid var(--rule);
+      background: var(--dark);
+      min-height: 360px;
+    }
+
+    .hero-shot img {
+      width: 100%;
+      height: 420px;
+      object-fit: cover;
+      display: block;
+      filter: saturate(0.88) contrast(1.02) brightness(0.82);
+    }
+
+    .hero-shot::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(180deg, rgba(11,10,8,0.08) 0%, rgba(11,10,8,0.72) 70%, rgba(11,10,8,0.9) 100%);
+      pointer-events: none;
+    }
+
+    .hero-shot-overlay {
+      position: absolute;
+      left: 1.4rem;
+      right: 1.4rem;
+      bottom: 1.2rem;
+      z-index: 2;
+      display: grid;
+      gap: 0.55rem;
+    }
+
+    .hero-shot-label {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.62rem;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--amber);
+      margin: 0;
+    }
+
+    .hero-shot-text {
+      margin: 0;
+      max-width: 48rem;
+      color: var(--cream);
+      line-height: 1.6;
+      font-size: 0.92rem;
+    }
+
     /* ── ARTICLES HEADER ── */
     .section-head {
       display: flex;
@@ -432,46 +456,36 @@
       display: block;
       text-decoration: none;
       color: inherit;
-      padding: 3rem 2.8rem;
+      padding: 1.35rem 1.35rem 1.6rem;
       border-right: 1px solid var(--rule);
       border-bottom: 1px solid var(--rule);
       background: var(--black);
       transition: background 0.3s;
     }
 
+    .article-card:last-child { border-right: none; }
+    .article-card:hover { background: var(--dark); }
 
-    .card-image-wrap {
-      margin: -0.7rem 0 1.4rem;
-      aspect-ratio: 16 / 10;
-      border: 1px solid var(--rule);
+    .card-cover {
+      margin: -1.35rem -1.35rem 1.35rem;
+      border: 1px solid rgba(255,255,255,0.06);
+      background: #0f0d0b;
       overflow: hidden;
-      background: var(--earth);
+      aspect-ratio: 16 / 9;
     }
 
-    .card-image-wrap::after {
-      content: '';
-      position: absolute;
-      inset: 0;
-      pointer-events: none;
-      background: linear-gradient(to top, rgba(11,10,8,0.35), rgba(11,10,8,0.05));
-    }
-
-    .card-image {
+    .card-cover img {
       width: 100%;
       height: 100%;
       object-fit: cover;
       display: block;
-      filter: saturate(0.88) contrast(1.03);
-      transform: scale(1.02);
+      filter: saturate(0.9) brightness(0.9);
       transition: transform 0.35s ease;
     }
 
-    .article-card:hover .card-image {
-      transform: scale(1.05);
+    .article-card:hover .card-cover img {
+      transform: scale(1.03);
     }
-
-    .article-card:last-child { border-right: none; }
-    .article-card:hover { background: var(--dark); }
 
     .card-num {
       font-family: 'DM Mono', monospace;
@@ -982,8 +996,9 @@
       nav { grid-template-columns: 1fr auto; padding: 1.2rem 1.5rem; }
       .nav-edition, .nav-right { display: none; }
       .hero { padding: 0 1.5rem 2.5rem; }
+      .hero-presentation { padding: 0 1.5rem 0; }
+      .hero-shot img { height: 280px; }
       .hero-foot { grid-template-columns: 1fr; }
-      .hero-visual-frame { margin-top: 1.4rem; aspect-ratio: 16 / 10; }
       .hero-vol, .hero-cta-wrap { display: none; }
       .featured-section, .articles-grid, .pillars, .newsletter { grid-template-columns: 1fr; }
       .featured-text, .newsletter-left, .newsletter-right { padding: 3rem 1.5rem; border-right: none; border-bottom: 1px solid var(--rule); }
@@ -1019,23 +1034,30 @@
   <section class="hero">
 
     <div class="hero-center">
-      <p class="hero-kicker">Articles rares · Clarté · Exécution</p>
+      <p class="hero-kicker">Articles rares · évolution concrète</p>
       <h1 class="hero-title">
         Dévier<br>sans se<br><span class="ital">perdre.</span>
       </h1>
-
-      <figure class="hero-visual-frame" aria-label="Image de présentation">
-        <img class="hero-visual-img" src="images/photo-article-1.png" alt="Image de présentation Voie de Traverse" />
-      </figure>
     </div>
     <div class="hero-foot">
-      <p class="hero-desc">Des articles sophistiqués, publiés de temps en temps, pour aider quelqu’un à évoluer vite dans la vraie vie.</p>
+      <p class="hero-desc">Des textes exigeants, publiés de temps en temps, pour aider à évoluer vite dans la vie avec plus de lucidité, de force et de tenue.</p>
       <div class="hero-vol">
         <p>Numéro</p>
         <span class="bignum">01</span>
       </div>
       <div class="hero-cta-wrap">
         <a class="btn-primary" href="#articles">Lire les articles</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- IMAGE DE PRÉSENTATION -->
+  <section class="hero-presentation reveal">
+    <div class="hero-shot">
+      <img src="images/photo-article-1.png" alt="Image de présentation de Voie de Traverse" />
+      <div class="hero-shot-overlay">
+        <p class="hero-shot-label">Voie de Traverse</p>
+        <p class="hero-shot-text">Des textes denses, publiés quand ils sont prêts. Pas du bruit. Du contenu qui sert.</p>
       </div>
     </div>
   </section>
@@ -1119,7 +1141,7 @@
   <div class="footer-ornament">— ✦ ✦ ✦ —</div>
   <footer>
     <a class="footer-logo" href="#">Voie de Traverse<span>.</span></a>
-    <p class="footer-copy">© 2026 — Voie de Traverse — Vol. I</p>
+    <p class="footer-copy">© 2026 — Voie de Traverse</p>
     <ul class="footer-links">
       <li><a href="#articles">Articles</a></li>
       <li><a href="#">À propos</a></li>
@@ -1156,7 +1178,10 @@
 
       grid.innerHTML = items.map(article => `
         <a class="article-card" href="${article.fichier}">
-          ${article.image ? `<div class="card-image-wrap"><img class="card-image" src="${article.image}" alt="${article.imageAlt || article.titre || ''}"></div>` : ''}
+          ${article.image ? `
+            <div class="card-cover">
+              <img src="${article.image}" alt="${article.imageAlt || article.titre || ''}">
+            </div>` : ''}
           <div class="card-num">
             <span>N°${article.numero}</span>
             ${article.tag ? `<span class="ctag">${article.tag}</span>` : ''}

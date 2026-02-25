@@ -8,7 +8,7 @@
 // ============================================
 
 const ARTICLES = [
-{
+  {
     numero: "001",
     titre: "Opération Nirvana",
     tag: "Vision",
@@ -16,7 +16,7 @@ const ARTICLES = [
     date: "Février 2026",
     lecture: "3 min",
     image: "images/photo-article-1.png",
-    imageAlt: "Image de présentation Voie de Traverse",
+    imageAlt: "Ville plongée dans l'obscurité sous un ciel étoilé",
     fichier: "articles/operation-nirvana.html"
   },
 
@@ -29,6 +29,7 @@ const ARTICLES = [
   //   date: "Mars 2026",
   //   lecture: "5 min",
   //   image: "images/nom-image.png",
+  //   imageAlt: "Description de l'image",
   //   fichier: "articles/nom-du-fichier.html"
   // },
 ];
